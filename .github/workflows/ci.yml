@@ -1,0 +1,66 @@
+# SPEC.md Phase 7: "CI blocks merges on failure" and § Supply chain:
+# "npm audit (or pnpm audit) in CI with high and critical issues failing
+# the build".
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same branch.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # package.json pins packageManager, so corepack installs the exact
+      # pnpm version the lockfile was written with.
+      - name: Enable corepack
+        run: corepack enable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck (app)
+        run: pnpm typecheck
+
+      - name: Typecheck (worker)
+        run: npx tsc -p tsconfig.worker.json
+
+      # The unit half of the contact-worker suite: header sanitising and
+      # address safety. The integration half needs a running wrangler dev
+      # and is skipped here; it is covered by the deploy smoke test.
+      - name: Worker unit tests
+        run: node --test --experimental-strip-types scripts/contact-worker.test.mjs
+
+      - name: Build
+        run: pnpm build
+
+      # Fails the build on high or critical advisories in anything that
+      # ships. Dev-only tooling is reported separately below so a wrangler
+      # transitive cannot block a release.
+      - name: Audit (production dependencies)
+        run: pnpm audit --prod --audit-level high
+
+      - name: Audit (all dependencies, informational)
+        run: pnpm audit --audit-level high || true

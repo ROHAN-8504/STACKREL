@@ -1,0 +1,43 @@
+# SPEC.md § Supply chain: "Dependabot or Renovate for updates, grouped
+# weekly."
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+    open-pull-requests-limit: 5
+    groups:
+      # One PR per group keeps review manageable and keeps related
+      # packages on matching versions.
+      next:
+        patterns:
+          [
+            'next',
+            'eslint-config-next',
+            '@next/*',
+            'react',
+            'react-dom',
+            '@types/react',
+            '@types/react-dom',
+          ]
+      tooling:
+        patterns: ['typescript', 'eslint*', 'prettier*', '@typescript-eslint/*']
+      content:
+        patterns: ['velite', 'shiki', 'rehype-*', 'remark-*']
+      cloudflare:
+        patterns: ['wrangler', '@cloudflare/*']
+      rest:
+        patterns: ['*']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+    groups:
+      actions:
+        patterns: ['*']

@@ -1,0 +1,33 @@
+# SPEC.md § Rendering rules: "GitHub repo data is fetched at build time; a
+# daily GitHub Actions cron triggers a rebuild to keep it fresh." Without
+# this, /open-source shows whatever GitHub returned on the last push.
+name: Daily rebuild
+
+on:
+  schedule:
+    # 04:17 UTC daily. Off the hour so it does not queue behind the crowd
+    # of jobs scheduled at :00.
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger the Cloudflare deploy hook
+        env:
+          HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "CLOUDFLARE_DEPLOY_HOOK is not set."
+            echo "Create a deploy hook in the Worker's Settings > Builds and"
+            echo "add the URL as a repository secret. Skipping."
+            exit 0
+          fi
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$HOOK")
+          echo "Deploy hook responded $code"
+          [ "$code" -ge 200 ] && [ "$code" -lt 300 ]

@@ -64,6 +64,12 @@ wildly pessimistic LCP for this site (5.3s against a real 1.3s).
 - Inline scripts are hashed automatically, JSON-LD included. Adding an
   inline script needs no CSP edit, but the build must be re-run before
   deploy so `_headers` carries its hash.
+- `pnpm.overrides` pins sharp to 0.35.5. velite asks for ^0.34.5, which
+  carries three high advisories (libvips, libheif, librsvg). Do not drop
+  the override until velite's own range moves past 0.35.5.
+- CI fails on high or critical advisories in production dependencies
+  (`pnpm audit --prod`). Dev tooling is reported but not gated, so a
+  transitive in wrangler cannot block a release.
 
 ## Commands
 
@@ -75,4 +81,8 @@ pnpm start             # wrangler dev, serves out/ as Cloudflare would
 pnpm lint
 pnpm typecheck
 pnpm format
+pnpm test:contact      # worker tests; integration half needs wrangler dev
 ```
+
+Deployment steps and the post-deploy verification checklist are in
+`DEPLOY.md`.
