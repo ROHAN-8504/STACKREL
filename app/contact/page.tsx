@@ -1,17 +1,48 @@
-import { SectionLabel } from '@/components/ui/section-label';
+import { ContactForm } from '@/components/site/contact-form';
+import { PageHeader } from '@/components/site/page-header';
+import { SITE } from '@/lib/site';
 
-export const metadata = { title: 'Contact' };
+export const metadata = {
+  title: 'Contact',
+  description: 'Start a project with Stackrel. Tell us what you are trying to ship.',
+};
 
-// Placeholder route so the layout shell, navigation and command palette are
-// complete in Phase 2. Real content arrives in Phase 5.
-export default function Page() {
+export default function ContactPage() {
   return (
-    <div className="container-content py-24">
-      <SectionLabel>Contact</SectionLabel>
-      <h1 className="text-h1 text-fg mt-3">Contact</h1>
-      <p className="text-body text-fg-muted mt-4 max-w-prose">
-        TODO: the contact form, posting to the /api/contact Worker. Built in Phase 5.
-      </p>
+    <div className="container-content pb-24">
+      <PageHeader
+        label="Contact"
+        title="Start a project"
+        intro="Tell us what you are trying to ship and what is in the way. The more concrete the better — constraints, deadlines and what you have already tried all help."
+      />
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px]">
+        <ContactForm />
+        <aside className="text-small text-fg-muted flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <p className="text-label text-fg-subtle font-mono uppercase">Response time</p>
+            <p>Within two working days.</p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="text-label text-fg-subtle font-mono uppercase">Prefer email?</p>
+            <a
+              href={`mailto:${SITE.email}`}
+              className="text-fg underline underline-offset-4"
+            >
+              {SITE.email}
+            </a>
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="text-label text-fg-subtle font-mono uppercase">
+              What to include
+            </p>
+            <ul className="marker:text-fg-subtle flex list-disc flex-col gap-1.5 pl-4">
+              <li>The outcome you need, not the implementation</li>
+              <li>Any hard deadline</li>
+              <li>What exists already</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

@@ -1,26 +1,48 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "stackrel-site",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-10-16",
+  "compatibility_flags": ["nodejs_compat"],
 
-  // Phase 1 is an assets-only Worker: no `main`, so every request is served
-  // straight from the static export and nothing counts against the 100k/day
-  // Worker request limit.
-  //
-  // Phase 5 adds the contact Worker. At that point this gains:
-  //   "main": "worker/index.ts",
-  //   "assets": { ..., "run_worker_first": ["/api/*"] },
-  //   "kv_namespaces": [{ "binding": "RATE_LIMIT", "id": "..." }],
-  //   "send_email": [{ "name": "CONTACT_EMAIL", "destination_address": "..." }]
-  // so only /api/* executes Worker code.
   "assets": {
     "directory": "./out",
-    // `next.config.ts` sets trailingSlash, so each route is out/<route>/index.html.
+    "binding": "ASSETS",
+    // Assets are served first; only /api/* executes Worker code, so static
+    // requests never count against the 100k/day Worker request limit.
+    "run_worker_first": ["/api/*"],
+    // next.config.ts sets trailingSlash, so routes are <route>/index.html.
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page",
   },
 
-  "observability": {
-    "enabled": true,
+  "observability": { "enabled": true },
+
+  "vars": {
+    // Not secrets. The Turnstile *site* key is public by design; the
+    // secret goes in with `wrangler secret put TURNSTILE_SECRET`.
+    "ALLOWED_ORIGIN": "https://stackrel.com",
+    "CONTACT_TO": "hello@stackrel.com",
+    "CONTACT_FROM": "hello@stackrel.com",
+  },
+
+  // Create with: wrangler kv namespace create RATE_LIMIT
+  // then paste the id here (a KV namespace id is not a secret).
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMIT",
+      "id": "TODO_KV_NAMESPACE_ID",
+      "preview_id": "local-rate-limit",
+    },
+  ],
+
+  // Email Routing must have hello@stackrel.com verified as a destination
+  // before this binding will deliver (SPEC.md § Deploying, step 6).
+  "send_email": [
+    { "name": "CONTACT_EMAIL", "destination_address": "hello@stackrel.com" },
+  ],
+
+  "dev": {
+    "port": 8787,
   },
 }

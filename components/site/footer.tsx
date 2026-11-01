@@ -34,16 +34,26 @@ export function Footer() {
                   {col.heading}
                 </p>
                 <ul className="flex flex-col gap-2">
-                  {col.links.map((link) => (
-                    <li key={link.href}>
-                      <Link
-                        href={link.href}
-                        className="text-small text-fg-muted hover:text-fg transition-colors duration-[var(--dur-instant)]"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
+                  {col.links.map((link) => {
+                    // A feed is a file, not a route: a next/link would make
+                    // the router prefetch an RSC payload for it and 404.
+                    const isFile = /\.[a-z0-9]+$/i.test(link.href);
+                    const linkClass =
+                      'text-small text-fg-muted hover:text-fg transition-colors duration-[var(--dur-instant)]';
+                    return (
+                      <li key={link.href}>
+                        {isFile ? (
+                          <a href={link.href} className={linkClass}>
+                            {link.label}
+                          </a>
+                        ) : (
+                          <Link href={link.href} className={linkClass}>
+                            {link.label}
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </nav>
             ))}
