@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "stackrel-site",
+  "compatibility_date": "2026-10-16",
+
+  // Phase 1 is an assets-only Worker: no `main`, so every request is served
+  // straight from the static export and nothing counts against the 100k/day
+  // Worker request limit.
+  //
+  // Phase 5 adds the contact Worker. At that point this gains:
+  //   "main": "worker/index.ts",
+  //   "assets": { ..., "run_worker_first": ["/api/*"] },
+  //   "kv_namespaces": [{ "binding": "RATE_LIMIT", "id": "..." }],
+  //   "send_email": [{ "name": "CONTACT_EMAIL", "destination_address": "..." }]
+  // so only /api/* executes Worker code.
+  "assets": {
+    "directory": "./out",
+    // `next.config.ts` sets trailingSlash, so each route is out/<route>/index.html.
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+
+  "observability": {
+    "enabled": true,
+  },
+}

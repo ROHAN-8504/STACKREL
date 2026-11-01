@@ -1,0 +1,325 @@
+@import 'tailwindcss';
+
+/* Dark/light is driven by [data-theme] (next-themes). Map Tailwind's `dark:`
+   variant onto it so shadcn primitives that use `dark:` still work. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ===========================================================================
+   DESIGN TOKENS — SPEC.md § Design system
+   Dark is the default theme; [data-theme='light'] overrides.
+   No component may use an ad-hoc hex value.
+   ========================================================================= */
+
+:root {
+  /* --- Colour: surfaces ------------------------------------------------- */
+  --bg: #0a0a0a;
+  --bg-subtle: #111111;
+  --bg-hover: #1a1a1a;
+
+  /* --- Colour: borders -------------------------------------------------- */
+  --border: rgb(255 255 255 / 0.1);
+  --border-strong: rgb(255 255 255 / 0.18);
+
+  /* --- Colour: text ----------------------------------------------------- */
+  --fg: #ededed;
+  --fg-muted: #a1a1a1;
+  /* SPEC value #6B6B6B scores 3.54:1 on --bg-subtle and 3.72:1 on --bg,
+     below the 4.5:1 the same spec section requires for body text.
+     Raised to the lightest grey that clears 4.5:1 on --bg-hover (the
+     worst-case surface): 4.53:1. See Phase 1 report, deviation 1. */
+  --fg-subtle: #828282;
+
+  /* --- Colour: accent --------------------------------------------------- */
+  --accent: #ffffff;
+  /* Not in the SPEC token table, but the Button spec ("white fill, black
+     text in dark mode") requires a paired foreground. Deviation 2. */
+  --accent-fg: #0a0a0a;
+
+  /* --- Colour: status (text + border; fill at 15%) ----------------------
+     SPEC gives no hex values ("green / amber / red at reduced saturation").
+     Derived so the label clears 4.5:1 against the composited badge surface
+     (--bg-subtle + 15% of the status colour). Deviation 3. */
+  --success: #8eccab;
+  --warning: #debe7c;
+  --error: #dd847e;
+  --status-fill: 0.15;
+
+  /* --- Hero gradient ----------------------------------------------------
+     Monochrome for v1 (open decision "Accent" resolved to pure mono).
+     Swap these two stops to introduce a signature colour later. */
+  --hero-glow: rgb(255 255 255 / 0.08);
+  --hero-glow-edge: rgb(255 255 255 / 0);
+
+  /* --- Focus ring (SPEC § Keyboard-first UX: 2px, offset 2px, --fg @60%) */
+  --ring: rgb(237 237 237 / 0.6);
+
+  /* --- Background texture ----------------------------------------------- */
+  --grid-line: rgb(255 255 255 / 0.04);
+
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --bg: #ffffff;
+  --bg-subtle: #fafafa;
+  --bg-hover: #f2f2f2;
+
+  --border: rgb(0 0 0 / 0.08);
+  --border-strong: rgb(0 0 0 / 0.15);
+
+  --fg: #171717;
+  --fg-muted: #666666;
+  /* SPEC value #8F8F8F scores 3.10:1 on --bg-subtle. Raised to the darkest
+     grey clearing 4.5:1 on --bg-hover: 4.55:1. Deviation 1. */
+  --fg-subtle: #6e6e6e;
+
+  --accent: #000000;
+  --accent-fg: #ffffff;
+
+  --success: #2a6f4a;
+  --warning: #825e17;
+  --error: #8f261e;
+
+  --hero-glow: rgb(0 0 0 / 0.05);
+  --hero-glow-edge: rgb(0 0 0 / 0);
+
+  --ring: rgb(23 23 23 / 0.6);
+  --grid-line: rgb(0 0 0 / 0.045);
+
+  color-scheme: light;
+}
+
+/* ===========================================================================
+   SCALES — theme-independent
+   ========================================================================= */
+
+:root {
+  /* Spacing, 4px base (SPEC § Spacing, radius, layers) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* Radius */
+  --radius-button: 6px;
+  --radius-card: 12px;
+  --radius-dialog: 16px;
+  --radius-full: 9999px;
+
+  /* Z layers */
+  --z-header: 40;
+  --z-popover: 50;
+  --z-dialog: 60;
+  --z-toast: 70;
+
+  /* Layout */
+  --width-content: 1200px;
+  --width-prose: 680px;
+
+  /* Motion — SPEC § Timing and easing tokens */
+  --dur-instant: 100ms;
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 500ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  /* Spring (motion package): stiffness 400, damping 30 — applied in Phase 3 */
+  --spring-stiffness: 400;
+  --spring-damping: 30;
+
+  /* Type — SPEC § Typography */
+  --text-display: clamp(40px, 6vw, 72px);
+  --text-display-lh: 1.05;
+  --text-display-tracking: -0.04em;
+  --text-h1: 40px;
+  --text-h1-lh: 1.1;
+  --text-h1-tracking: -0.03em;
+  --text-h2: 28px;
+  --text-h2-lh: 1.2;
+  --text-h2-tracking: -0.02em;
+  --text-h3: 20px;
+  --text-h3-lh: 1.3;
+  --text-h3-tracking: -0.01em;
+  --text-body: 16px;
+  --text-body-lh: 1.6;
+  --text-small: 14px;
+  --text-small-lh: 1.5;
+  --text-label: 12px;
+  --text-label-lh: 1.4;
+  --text-label-tracking: 0.04em;
+}
+
+/* ===========================================================================
+   TAILWIND THEME BRIDGE — exposes tokens as utilities (bg-bg, text-fg-muted,
+   rounded-card, duration-base, ease-out …). `inline` keeps the var reference
+   so theme switching stays a pure CSS variable swap.
+   ========================================================================= */
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-hover: var(--bg-hover);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-ring: var(--ring);
+
+  --radius-button: var(--radius-button);
+  --radius-card: var(--radius-card);
+  --radius-dialog: var(--radius-dialog);
+
+  --spacing-section: var(--space-24);
+
+  --container-content: var(--width-content);
+  --container-prose: var(--width-prose);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --text-display: var(--text-display);
+  --text-display--line-height: var(--text-display-lh);
+  --text-display--letter-spacing: var(--text-display-tracking);
+  --text-display--font-weight: 600;
+
+  --text-h1: var(--text-h1);
+  --text-h1--line-height: var(--text-h1-lh);
+  --text-h1--letter-spacing: var(--text-h1-tracking);
+  --text-h1--font-weight: 600;
+
+  --text-h2: var(--text-h2);
+  --text-h2--line-height: var(--text-h2-lh);
+  --text-h2--letter-spacing: var(--text-h2-tracking);
+  --text-h2--font-weight: 600;
+
+  --text-h3: var(--text-h3);
+  --text-h3--line-height: var(--text-h3-lh);
+  --text-h3--letter-spacing: var(--text-h3-tracking);
+  --text-h3--font-weight: 600;
+
+  --text-body: var(--text-body);
+  --text-body--line-height: var(--text-body-lh);
+
+  --text-small: var(--text-small);
+  --text-small--line-height: var(--text-small-lh);
+
+  --text-label: var(--text-label);
+  --text-label--line-height: var(--text-label-lh);
+  --text-label--letter-spacing: var(--text-label-tracking);
+  --text-label--font-weight: 500;
+
+  --ease-out: var(--ease-out);
+  --ease-in: var(--ease-in);
+  --ease-in-out: var(--ease-in-out);
+}
+
+/* ===========================================================================
+   BASE
+   ========================================================================= */
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body-lh);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* SPEC § Keyboard-first UX: visible focus ring on every focusable element. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Anchors scroll smoothly only when reduced motion is off (motion rule 8). */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Motion rule 9: reduced motion kills movement; colour changes stay. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-property:
+        color, background-color, border-color, outline-color, fill, stroke !important;
+      transition-duration: var(--dur-instant) !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ===========================================================================
+   UTILITIES
+   ========================================================================= */
+
+@utility container-content {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--width-content);
+  padding-inline: var(--space-6);
+}
+
+@utility container-prose {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--width-prose);
+}
+
+/* Quiet background texture, masked to fade at the edges (SPEC § Principles). */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 100% 70% at 50% 0%, #000 40%, transparent 100%);
+}
+
+/* Skip link: first focusable element, visible only when focused.
+   Parked fully off-screen with a transform (motion rule 1: only transform
+   and opacity animate — the earlier `top` version both animated the wrong
+   property and left 22px of the link on screen). */
+@utility skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-4);
+  z-index: calc(var(--z-toast) + 1);
+  border-radius: var(--radius-button);
+  background-color: var(--accent);
+  color: var(--accent-fg);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-small);
+  transform: translateY(calc(-100% - var(--space-4) * 2));
+  transition: transform var(--dur-fast) var(--ease-out);
+  &:focus-visible {
+    transform: translateY(0);
+  }
+}
