@@ -48,8 +48,9 @@ export const FEATURED = {
   heading: 'DesiStore',
   summary:
     'An Indian alternative to FakeStoreAPI: a catalogue API with realistic local products, prices and categories, with AI features layered on top so prototypes can be built against data that looks like the market they target.',
-  // TODO (Rohan): live URL, repo URL and real metrics. SPEC.md § First entry.
-  liveUrl: null as string | null,
+  // Live URL supplied by Rohan. Repo URL and real metrics still outstanding
+  // (SPEC.md § First entry: DesiStore).
+  liveUrl: 'https://desistore.stackrel.com/' as string | null,
   repoUrl: null as string | null,
   metrics: [
     { label: 'Endpoints', value: null },
