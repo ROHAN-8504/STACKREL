@@ -36,13 +36,20 @@ of its phase and approved.
 | 9   | Diagram renders Mermaid at build time                       | Diagram takes an SVG plus caption                          | Mermaid needs a DOM, so build-time rendering means Chromium in CI and on Workers Builds. Deferred pending a decision.                   |
 | 10  | MDX rendered in a client component                          | MDX evaluated at build time in a Server Component          | Velite's runtime uses `new Function`, which CSP forbids without `'unsafe-eval'`. Under the production CSP every article rendered empty. |
 
+| 11 | `next/image` in the Figure MDX component | plain `<img>` with width/height | `images.unoptimized` is on in a static export, so next/image emits the same markup while shipping its client runtime (~5KB brotli on article pages). |
+
 ## Performance budget
 
 SPEC.md asks for first-load JS on `/` under 120KB gzipped. The React 19 +
 Next 16 App Router floor is ~129KB gzipped on an essentially empty page, so
 that target is unreachable on this stack. Measured as brotli — what
 Cloudflare actually serves — the budget is treated as **140KB**, agreed in
-Phase 2. Current: `/` ~129KB, `/work/[slug]` ~142KB.
+Phase 2. Current: `/` ~130KB, `/work/[slug]` ~139KB.
+
+Lighthouse (mobile, real throttling) is 99/100/100/100 on `/`,
+`/work/[slug]` and `/contact`. Always measure with
+`--throttling-method=devtools`: Lighthouse's simulated mode reports a
+wildly pessimistic LCP for this site (5.3s against a real 1.3s).
 
 ## Security notes
 
@@ -52,6 +59,11 @@ Phase 2. Current: `/` ~129KB, `/work/[slug]` ~142KB.
   hashing inline scripts into the CSP. Never hand-edit `out/_headers`.
 - Header values in `worker/security-headers.ts` must stay in step with that
   script: the Worker sends the same headers on its own responses.
+- Accessibility is checked with axe across every page in both themes.
+  The last run was clean at every impact level.
+- Inline scripts are hashed automatically, JSON-LD included. Adding an
+  inline script needs no CSP edit, but the build must be re-run before
+  deploy so `_headers` carries its hash.
 
 ## Commands
 

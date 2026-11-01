@@ -3,6 +3,7 @@ import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import { ViewTransition } from 'react';
 
+import { Analytics } from '@/components/site/analytics';
 import { CommandMenuProvider } from '@/components/site/command-menu-context';
 import { Footer } from '@/components/site/footer';
 import { Header } from '@/components/site/header';
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </main>
             </ViewTransition>
             <Footer />
+            <Analytics />
           </CommandMenuProvider>
         </ThemeProvider>
       </body>

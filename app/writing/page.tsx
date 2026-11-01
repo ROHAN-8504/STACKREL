@@ -2,12 +2,14 @@ import { EntryCard } from '@/components/site/entry-card';
 import { PageHeader } from '@/components/site/page-header';
 import { TagFilter } from '@/components/site/tag-filter';
 import { allWriting, tagsOf } from '@/lib/content';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Writing',
   description:
     'Write-ups, breakdowns and learnings from building AI systems in production.',
-};
+  path: '/writing',
+});
 
 export default function WritingPage() {
   const items = allWriting();

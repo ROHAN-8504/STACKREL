@@ -133,7 +133,28 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
   }
 
   await sendEmail(env, config, data, replyTo);
+
+  // SPEC.md § Analytics: Web Analytics has no custom events, so contact
+  // intent is counted here instead. The counter is a bare per-day integer —
+  // no IP, no email, nothing that identifies a person.
+  await countSubmission(env);
+
   return json({ ok: true }, 200);
+}
+
+/** Opaque per-day success counter. Keys expire after 90 days. */
+async function countSubmission(env: Env): Promise<void> {
+  try {
+    const day = new Date().toISOString().slice(0, 10);
+    const key = `contact-success:${day}`;
+    const current = Number((await env.RATE_LIMIT.get(key)) ?? '0');
+    await env.RATE_LIMIT.put(key, String(current + 1), {
+      expirationTtl: 60 * 60 * 24 * 90,
+    });
+  } catch (error) {
+    // Never fail a delivered message because a counter write failed.
+    console.error('[contact] counter write failed', error);
+  }
 }
 
 /** Fixed-window counter in KV. 5 per hour per IP. */

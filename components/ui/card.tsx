@@ -22,8 +22,14 @@ export function CardHeader({ className, ...props }: ComponentProps<'div'>) {
   return <div className={cn('flex flex-col gap-2 p-6', className)} {...props} />;
 }
 
-export function CardTitle({ className, ...props }: ComponentProps<'h3'>) {
-  return <h3 className={cn('text-h3 text-fg', className)} {...props} />;
+export function CardTitle({
+  as: Tag = 'h3',
+  className,
+  ...props
+}: ComponentProps<'h3'> & { as?: 'h2' | 'h3' | 'h4' }) {
+  // The visual size is fixed by the token; the element is chosen by the
+  // surrounding heading order (SPEC.md § SEO: no skipped levels).
+  return <Tag className={cn('text-h3 text-fg', className)} {...props} />;
 }
 
 export function CardDescription({ className, ...props }: ComponentProps<'p'>) {

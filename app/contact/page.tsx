@@ -1,11 +1,13 @@
 import { ContactForm } from '@/components/site/contact-form';
 import { PageHeader } from '@/components/site/page-header';
 import { SITE } from '@/lib/site';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Contact',
   description: 'Start a project with Stackrel. Tell us what you are trying to ship.',
-};
+  path: '/contact',
+});
 
 export default function ContactPage() {
   return (

@@ -23,6 +23,7 @@ export function Latest() {
                 summary={item.summary}
                 date={item.date}
                 badge={{ label: item.group, variant: 'default' }}
+                headingLevel="h3"
               />
             </Reveal>
           ))}

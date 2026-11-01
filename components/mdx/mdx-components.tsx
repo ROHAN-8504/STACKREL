@@ -1,5 +1,4 @@
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
 
@@ -99,12 +98,16 @@ export function Figure({
 }) {
   return (
     <figure className="my-8">
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element -- the static
+          export sets images.unoptimized, so next/image emits the same
+          markup while shipping its client runtime. width/height are set,
+          so there is no layout shift. */}
+      <img
         src={src}
         alt={alt}
         width={width}
         height={height}
-        className="border-border rounded-[var(--radius-card)] border"
+        className="border-border h-auto w-full rounded-[var(--radius-card)] border"
       />
       {caption ? (
         <figcaption className="text-small text-fg-subtle mt-3">{caption}</figcaption>

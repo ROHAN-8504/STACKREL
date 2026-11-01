@@ -2,11 +2,13 @@ import { EntryCard } from '@/components/site/entry-card';
 import { PageHeader } from '@/components/site/page-header';
 import { TagFilter } from '@/components/site/tag-filter';
 import { allLab, tagsOf } from '@/lib/content';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Lab',
   description: 'Experiments run on Stackrel: the hypothesis, the method and the result.',
-};
+  path: '/lab',
+});
 
 const STATUS = {
   running: 'warning',

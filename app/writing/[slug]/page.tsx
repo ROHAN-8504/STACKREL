@@ -3,7 +3,9 @@ import { notFound } from 'next/navigation';
 import { MDXContent } from '@/components/mdx/mdx-content';
 import { TableOfContents } from '@/components/site/toc';
 import { Badge } from '@/components/ui/badge';
+import { JsonLd } from '@/components/site/json-ld';
 import { allWriting, formatDate, writingBySlug } from '@/lib/content';
+import { articleLd, breadcrumbLd, pageMetadata } from '@/lib/seo';
 
 type Params = Promise<{ slug: string }>;
 
@@ -17,11 +19,15 @@ export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
   const entry = writingBySlug(slug);
   if (!entry) return {};
-  return {
+  return pageMetadata({
     title: entry.title,
     description: entry.summary,
-    alternates: { canonical: entry.permalink },
-  };
+    path: entry.permalink,
+    type: 'article',
+    publishedTime: entry.date,
+    modifiedTime: entry.updated,
+    tags: entry.tags,
+  });
 }
 
 export default async function WritingEntryPage({ params }: { params: Params }) {
@@ -31,6 +37,23 @@ export default async function WritingEntryPage({ params }: { params: Params }) {
 
   return (
     <article className="container-content pt-20 pb-24">
+      <JsonLd
+        data={[
+          articleLd({
+            title: entry.title,
+            description: entry.summary,
+            path: entry.permalink,
+            datePublished: entry.date,
+            dateModified: entry.updated,
+            tags: entry.tags,
+          }),
+          breadcrumbLd([
+            { name: 'Home', path: '/' },
+            { name: 'Writing', path: '/writing' },
+            { name: entry.title, path: entry.permalink },
+          ]),
+        ]}
+      />
       <header className="border-border flex flex-col gap-4 border-b pb-10">
         <div className="flex flex-wrap items-center gap-3">
           <Badge>{entry.kind}</Badge>

@@ -13,6 +13,7 @@ export function EntryCard({
   meta,
   badge,
   tags = [],
+  headingLevel = 'h2',
 }: {
   href: string;
   title: string;
@@ -21,6 +22,8 @@ export function EntryCard({
   meta?: string;
   badge?: { label: string; variant: 'default' | 'success' | 'warning' | 'error' };
   tags?: string[];
+  /** Pick the level that keeps the page's heading order unbroken. */
+  headingLevel?: 'h2' | 'h3';
 }) {
   return (
     <Card className="h-full">
@@ -35,7 +38,7 @@ export function EntryCard({
           {meta ? <span className="text-small text-fg-subtle">{meta}</span> : null}
         </div>
 
-        <CardTitle>
+        <CardTitle as={headingLevel}>
           {/* Stretched link keeps the whole card clickable with one tab stop. */}
           <Link
             href={href}

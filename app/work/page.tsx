@@ -1,12 +1,14 @@
 import { EntryCard } from '@/components/site/entry-card';
 import { PageHeader } from '@/components/site/page-header';
 import { allWork } from '@/lib/content';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Work',
   description:
     'Case studies: the problem, the architecture, the decisions and the results.',
-};
+  path: '/work',
+});
 
 export default function WorkPage() {
   const items = allWork();

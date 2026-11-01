@@ -2,11 +2,13 @@ import { PageHeader } from '@/components/site/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { fetchRepos } from '@/lib/github';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Open Source',
   description: 'Repositories and packages published by Stackrel.',
-};
+  path: '/open-source',
+});
 
 // Fetched at build time. In a static export this runs once during the
 // build; a daily GitHub Actions cron rebuilds to refresh it.
@@ -33,7 +35,7 @@ export default async function OpenSourcePage() {
             <li key={repo.url} className="relative">
               <Card className="h-full">
                 <CardHeader>
-                  <CardTitle>
+                  <CardTitle as="h2">
                     {/* Rendered as text, never HTML. */}
                     <a
                       href={repo.url}

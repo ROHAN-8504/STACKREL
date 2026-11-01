@@ -14,7 +14,11 @@ export function SearchTrigger() {
     <button
       type="button"
       onClick={open}
-      aria-label="Open command palette"
+      // No aria-label: the visible word "Search" is the accessible name.
+      // An aria-label that did not contain the visible text failed axe's
+      // label-content-name-mismatch check. The shortcut is announced
+      // through aria-keyshortcuts instead of being read as part of the name.
+      aria-keyshortcuts="Meta+K Control+K"
       className={cn(
         'hidden items-center gap-2 rounded-[var(--radius-button)] sm:inline-flex',
         'border-border bg-bg-subtle border px-2.5 py-1.5',
@@ -24,7 +28,7 @@ export function SearchTrigger() {
       )}
     >
       <span>Search</span>
-      <Kbd>⌘K</Kbd>
+      <Kbd aria-hidden="true">⌘K</Kbd>
     </button>
   );
 }
