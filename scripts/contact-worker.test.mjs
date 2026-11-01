@@ -98,6 +98,19 @@ test(
 );
 
 test(
+  'Origin check: a foreign Origin is refused even when config is incomplete',
+  { skip: !serverUp && 'wrangler dev not running' },
+  async () => {
+    // Regression: environment validation used to run before the Origin
+    // check, so a deployment missing TURNSTILE_SECRET answered 500 to
+    // every request, including ones that should be cheaply refused.
+    const res = await post(valid(), { origin: 'https://evil.test' });
+    assert.notEqual(res.status, 500, 'a config gap must not turn a 403 into a 500');
+    assert.equal(res.status, 403);
+  },
+);
+
+test(
   'Origin check: a missing Origin is refused',
   { skip: !serverUp && 'wrangler dev not running' },
   async () => {

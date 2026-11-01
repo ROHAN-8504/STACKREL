@@ -54,28 +54,27 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
     return json({ error: 'Method not allowed' }, 405);
   }
 
-  // --- 2. environment ----------------------------------------------------
-  const parsedEnv = envSchema.safeParse(env);
-  if (!parsedEnv.success) {
-    console.error('[contact] misconfigured environment', parsedEnv.error.issues);
-    return json({ error: GENERIC_ERROR }, 500);
-  }
-  const config = parsedEnv.data;
-
-  // --- 3. origin ---------------------------------------------------------
-  // Exact match only. A missing or foreign Origin is refused.
+  // --- 2. origin ---------------------------------------------------------
+  // Exact match only; a missing or foreign Origin is refused.
+  //
+  // Read straight off env rather than through the validated config, so this
+  // runs BEFORE the environment is checked. A deployment missing a secret
+  // must still reject a foreign origin with 403 rather than answering 500:
+  // a config gap should not turn the cheapest rejection into a server
+  // error, nor let unverified traffic reach the rate limiter untracked.
+  const allowedOrigin = env.ALLOWED_ORIGIN;
   const origin = request.headers.get('origin');
-  if (origin !== config.ALLOWED_ORIGIN) {
+  if (!allowedOrigin || origin !== allowedOrigin) {
     return json({ error: GENERIC_ERROR }, 403);
   }
 
-  // --- 4. content type ---------------------------------------------------
+  // --- 3. content type ---------------------------------------------------
   const contentType = request.headers.get('content-type') ?? '';
   if (!contentType.toLowerCase().startsWith('application/json')) {
     return json({ error: GENERIC_ERROR }, 415);
   }
 
-  // --- 5. size cap -------------------------------------------------------
+  // --- 4. size cap -------------------------------------------------------
   // Trust the declared length when present, but measure the real bytes too:
   // Content-Length can lie or be absent on a chunked body.
   const declared = Number(request.headers.get('content-length') ?? '0');
@@ -86,6 +85,15 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
   if (raw.byteLength > MAX_BODY_BYTES) {
     return json({ error: GENERIC_ERROR }, 413);
   }
+
+  // --- 5. environment ----------------------------------------------------
+  // Everything below needs real configuration, so validate it here.
+  const parsedEnv = envSchema.safeParse(env);
+  if (!parsedEnv.success) {
+    console.error('[contact] misconfigured environment', parsedEnv.error.issues);
+    return json({ error: GENERIC_ERROR }, 500);
+  }
+  const config = parsedEnv.data;
 
   // --- 6. rate limit -----------------------------------------------------
   // Keyed on CF-Connecting-IP, which Cloudflare sets and a client cannot

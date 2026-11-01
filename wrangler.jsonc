@@ -31,8 +31,8 @@
   "kv_namespaces": [
     {
       "binding": "RATE_LIMIT",
-      "id": "6bec5fd6aed14b59917cea52fbd34fdc",
-      "preview_id": "6bec5fd6aed14b59917cea52fbd34fdc",
+      "id": "TODO_KV_NAMESPACE_ID",
+      "preview_id": "local-rate-limit",
     },
   ],
 
