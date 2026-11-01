@@ -323,3 +323,62 @@
     transform: translateY(0);
   }
 }
+
+/* ===========================================================================
+   KEYFRAMES + VIEW TRANSITIONS — SPEC.md § Motion rules
+   ========================================================================= */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Dialog and palette: scale from 0.96 plus fade in (motion rule 7). */
+@keyframes palette-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Motion rule 5: cross-fade page navigation in 150–200ms. Browsers without
+   the View Transitions API simply swap instantly. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+  animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(root) {
+  animation-name: fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: fade-in;
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Motion rule 9: reduced motion disables page transitions entirely. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
