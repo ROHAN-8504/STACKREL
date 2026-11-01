@@ -24,8 +24,11 @@ export type Repo = {
   updatedAt: string;
 };
 
-/** Set to a GitHub user or org to populate /open-source. */
-const GITHUB_OWNER = process.env.GITHUB_OWNER ?? '';
+/**
+ * GitHub account whose public repositories populate /open-source.
+ * Overridable at build time; the default is Rohan's account.
+ */
+const GITHUB_OWNER = process.env.GITHUB_OWNER ?? 'ROHAN-8504';
 
 type GitHubRepo = {
   name: string;
