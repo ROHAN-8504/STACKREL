@@ -12,18 +12,27 @@ import { useTheme } from 'next-themes';
 import { useCallback, useState } from 'react';
 
 import { Kbd } from '@/components/ui/kbd';
+import type { SearchDoc } from '@/lib/content';
 import { ROUTES, SITE } from '@/lib/site';
 
 const ICONS: Record<string, typeof Home> = {
   '/': Home,
 };
 
+const GROUP_CLASS =
+  '[&_[cmdk-group-heading]]:text-label [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:text-fg-subtle';
+
+const ITEM_CLASS =
+  'text-small flex cursor-pointer items-center gap-3 rounded-[var(--radius-button)] px-3 py-2 text-fg-muted data-[selected=true]:bg-bg-hover data-[selected=true]:text-fg';
+
 export function CommandMenu({
   open,
   onOpenChange,
+  docs,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  docs: SearchDoc[];
 }) {
   const router = useRouter();
   const { setTheme, resolvedTheme } = useTheme();
@@ -91,6 +100,26 @@ export function CommandMenu({
             );
           })}
         </Command.Group>
+
+        {(['Work', 'Writing', 'Lab'] as const).map((group) => {
+          const inGroup = docs.filter((d) => d.group === group);
+          if (inGroup.length === 0) return null;
+          return (
+            <Command.Group key={group} heading={group} className={GROUP_CLASS}>
+              {inGroup.map((doc) => (
+                <Command.Item
+                  key={doc.href}
+                  value={`${doc.title} ${doc.summary} ${doc.tags.join(' ')}`}
+                  onSelect={() => run(() => router.push(doc.href))}
+                  className={ITEM_CLASS}
+                >
+                  <FileText className="size-4 shrink-0" aria-hidden="true" />
+                  <span className="truncate">{doc.title}</span>
+                </Command.Item>
+              ))}
+            </Command.Group>
+          );
+        })}
 
         <Command.Group
           heading="Actions"

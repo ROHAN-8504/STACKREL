@@ -1,18 +1,41 @@
-import { SectionLabel } from '@/components/ui/section-label';
+import { EntryCard } from '@/components/site/entry-card';
+import { PageHeader } from '@/components/site/page-header';
+import { allWork } from '@/lib/content';
 
-export const metadata = { title: 'Work' };
+export const metadata = {
+  title: 'Work',
+  description:
+    'Case studies: the problem, the architecture, the decisions and the results.',
+};
 
-// Placeholder route so the layout shell, navigation and command palette are
-// complete in Phase 2. Real content arrives in Phase 4.
-export default function Page() {
+export default function WorkPage() {
+  const items = allWork();
+
   return (
-    <div className="container-content py-24">
-      <SectionLabel>Work</SectionLabel>
-      <h1 className="text-h1 text-fg mt-3">Work</h1>
-      <p className="text-body text-fg-muted mt-4 max-w-prose">
-        TODO: case-study index, a card grid of client, problem, stack and outcome metric.
-        Built in Phase 4.
-      </p>
+    <div className="container-content pb-24">
+      <PageHeader
+        label="Work"
+        title="Case studies"
+        intro="What the problem was, how it was built, and what happened after it shipped."
+      />
+      {items.length === 0 ? (
+        <p className="text-body text-fg-muted">No case studies published yet.</p>
+      ) : (
+        <ul className="grid gap-6 md:grid-cols-2">
+          {items.map((i) => (
+            <li key={i.slug} className="relative">
+              <EntryCard
+                href={i.permalink}
+                title={i.title}
+                summary={i.summary}
+                date={i.date}
+                meta={i.client}
+                tags={i.stack.slice(0, 4)}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

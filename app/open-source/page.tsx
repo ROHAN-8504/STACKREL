@@ -1,17 +1,64 @@
-import { SectionLabel } from '@/components/ui/section-label';
+import { PageHeader } from '@/components/site/page-header';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { fetchRepos } from '@/lib/github';
 
-export const metadata = { title: 'Open Source' };
+export const metadata = {
+  title: 'Open Source',
+  description: 'Repositories and packages published by Stackrel.',
+};
 
-// Placeholder route so the layout shell, navigation and command palette are
-// complete in Phase 2. Real content arrives in Phase 4.
-export default function Page() {
+// Fetched at build time. In a static export this runs once during the
+// build; a daily GitHub Actions cron rebuilds to refresh it.
+export const dynamic = 'force-static';
+
+export default async function OpenSourcePage() {
+  const { repos, note } = await fetchRepos();
+
   return (
-    <div className="container-content py-24">
-      <SectionLabel>Open Source</SectionLabel>
-      <h1 className="text-h1 text-fg mt-3">Open Source</h1>
-      <p className="text-body text-fg-muted mt-4 max-w-prose">
-        TODO: repo cards built from GitHub data at build time. Built in Phase 4.
-      </p>
+    <div className="container-content pb-24">
+      <PageHeader
+        label="Open Source"
+        title="Things we give away"
+        intro="Repositories and packages, pulled from GitHub when the site builds."
+      />
+
+      {repos.length === 0 ? (
+        <p className="text-body text-fg-muted max-w-prose">
+          {note ?? 'No public repositories yet.'}
+        </p>
+      ) : (
+        <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {repos.map((repo) => (
+            <li key={repo.url} className="relative">
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>
+                    {/* Rendered as text, never HTML. */}
+                    <a
+                      href={repo.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="after:absolute after:inset-0"
+                    >
+                      {repo.name}
+                    </a>
+                  </CardTitle>
+                  {repo.description ? (
+                    <CardDescription>{repo.description}</CardDescription>
+                  ) : null}
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {repo.language ? <Badge>{repo.language}</Badge> : null}
+                    <span className="text-small text-fg-subtle">
+                      {repo.stars} {repo.stars === 1 ? 'star' : 'stars'}
+                    </span>
+                  </div>
+                </CardHeader>
+              </Card>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

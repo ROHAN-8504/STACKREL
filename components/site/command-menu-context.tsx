@@ -21,6 +21,8 @@ import {
   type ReactNode,
 } from 'react';
 
+import type { SearchDoc } from '@/lib/content';
+
 type CommandMenuContextValue = { open: () => void };
 
 const CommandMenuContext = createContext<CommandMenuContextValue>({
@@ -60,7 +62,14 @@ function onIdle(fn: () => void): () => void {
   return () => window.clearTimeout(id);
 }
 
-export function CommandMenuProvider({ children }: { children: ReactNode }) {
+export function CommandMenuProvider({
+  children,
+  docs,
+}: {
+  children: ReactNode;
+  /** Content index, built at build time and passed in from the layout. */
+  docs: SearchDoc[];
+}) {
   const [isOpen, setIsOpen] = useState(false);
   // Mounted (but closed) once the chunk has arrived, so opening is a state
   // flip rather than a network round-trip.
@@ -90,7 +99,9 @@ export function CommandMenuProvider({ children }: { children: ReactNode }) {
   return (
     <CommandMenuContext.Provider value={value}>
       {children}
-      {(ready || isOpen) && <CommandMenu open={isOpen} onOpenChange={setIsOpen} />}
+      {(ready || isOpen) && (
+        <CommandMenu open={isOpen} onOpenChange={setIsOpen} docs={docs} />
+      )}
     </CommandMenuContext.Provider>
   );
 }

@@ -1,6 +1,11 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Resolve the Velite output (`#site/content`) for the bundler as well as
+  // for TypeScript. Velite writes .velite/ before `next build` runs.
+  turbopack: {
+    resolveAlias: { '#site/content': './.velite' },
+  },
   // Static export: no server at request time. Phase 1 of SPEC.md.
   output: 'export',
 

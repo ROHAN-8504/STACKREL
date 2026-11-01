@@ -4,14 +4,15 @@
   "private": true,
   "packageManager": "pnpm@10.28.0",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && node scripts/prune-dev-routes.mjs",
+    "dev": "velite build && next dev",
+    "build": "velite build --strict && next build && node scripts/prune-dev-routes.mjs",
     "build:styleguide": "NEXT_PUBLIC_ENABLE_STYLEGUIDE=1 pnpm run build",
     "start": "wrangler dev",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "content": "velite build --strict"
   },
   "dependencies": {
     "@radix-ui/react-tabs": "1.2.1",
@@ -24,7 +25,8 @@
     "next-themes": "0.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "tailwind-merge": "3.7.0"
+    "tailwind-merge": "3.7.0",
+    "velite": "0.4.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",
@@ -35,6 +37,10 @@
     "eslint-config-next": "16.4.2",
     "prettier": "3.9.10",
     "prettier-plugin-tailwindcss": "0.8.1",
+    "rehype-pretty-code": "0.14.5",
+    "rehype-slug": "6.0.0",
+    "remark-gfm": "4.0.1",
+    "shiki": "4.5.0",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "wrangler": "4.151.1"
@@ -42,7 +48,8 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
-      "workerd"
+      "workerd",
+      "sharp"
     ]
   }
 }

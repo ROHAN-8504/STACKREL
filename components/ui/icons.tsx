@@ -45,3 +45,36 @@ export function MonitorIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function CopyIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props} aria-hidden="true">
+      <rect width="13" height="13" x="9" y="9" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
+export function CheckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props} aria-hidden="true">
+      <path d="m20 6-11 11-5-5" />
+    </svg>
+  );
+}
+
+export function ArrowRightIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props} aria-hidden="true">
+      <path d="M5 12h14M12 5l7 7-7 7" />
+    </svg>
+  );
+}
+
+export function ExternalIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props} aria-hidden="true">
+      <path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    </svg>
+  );
+}

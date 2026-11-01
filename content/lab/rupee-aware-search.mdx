@@ -1,0 +1,33 @@
+---
+title: Does embedding search beat keyword search on Indian product names?
+summary: Testing whether vector search handles transliterated and mixed-script product names better than Postgres full-text search.
+date: 2026-10-28
+tags: [search, embeddings, rag]
+status: running
+hypothesis: Embedding search will outperform Postgres full-text search on transliterated and mixed-script product names, where keyword matching fails on spelling variants.
+startedAt: 2026-10-28
+---
+
+Indian product names arrive in several spellings at once. The same item is
+"atta", "aata" or written in Devanagari, and shoppers type all three.
+Postgres full-text search treats those as unrelated tokens.
+
+## The hypothesis
+
+Embedding search should collapse those variants, because they sit close
+together in vector space regardless of spelling.
+
+## Method
+
+Run both search backends over the DesiStore catalogue with a query set
+covering transliteration variants, script mixing and common misspellings,
+then compare recall at 10.
+
+<Callout type="warning">
+  This experiment is running. No results are published yet, and nothing below is a
+  conclusion.
+</Callout>
+
+## Result
+
+Pending.

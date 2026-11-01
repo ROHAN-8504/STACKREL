@@ -1,0 +1,38 @@
+---
+title: How we built DesiStore
+slug: how-we-built-desistore
+summary: Why an Indian alternative to FakeStoreAPI was worth building, and how the catalogue API is put together.
+date: 2026-10-24
+tags: [api, backend, ai]
+kind: writeup
+---
+
+Every e-commerce prototype starts with fake data, and in India that data is
+almost always wrong. Prices in dollars, product names nobody recognises,
+categories that do not match how local shops are organised. The demo works
+but it does not read as real, and the first thing a stakeholder says is
+"why does this look American?".
+
+DesiStore exists to remove that step.
+
+## What it is
+
+A catalogue API shaped like FakeStoreAPI — products, categories, carts,
+users — with Indian products, rupee pricing and categories that match the
+market. Drop it into a prototype and the data looks right from the start.
+
+<Callout type="note">
+  TODO: expand with the real design notes once the architecture section of the case study
+  is written.
+</Callout>
+
+## Why not just seed a database
+
+Seeded data goes stale and lives in one project. An API is shared, versioned
+and can grow AI features — search that understands intent, descriptions
+generated per product — without every consumer re-seeding.
+
+## What is next
+
+The case study has the architecture and the numbers as they land. The API
+is live at [desistore.stackrel.com](https://desistore.stackrel.com/).

@@ -4,6 +4,7 @@ import { HeaderChrome } from '@/components/site/header-chrome';
 import { SearchTrigger } from '@/components/site/search-trigger';
 import { Wordmark } from '@/components/site/wordmark';
 import { buttonVariants } from '@/components/ui/button';
+import { collectionHasEntries } from '@/lib/content';
 import { NAV } from '@/lib/site';
 
 // Server Component. SPEC.md § Landing page sections — Header: wordmark left;
@@ -14,6 +15,10 @@ import { NAV } from '@/lib/site';
 // Only two client islands live inside: HeaderChrome (scroll state) and
 // SearchTrigger (opens the palette).
 export function Header() {
+  // SPEC.md § Content model: hide a nav item if its collection has zero
+  // published entries.
+  const nav = NAV.filter((i) => !i.collection || collectionHasEntries(i.collection));
+
   return (
     <HeaderChrome>
       <nav
@@ -29,7 +34,7 @@ export function Header() {
         </Link>
 
         <ul className="hidden items-center gap-6 md:flex">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}

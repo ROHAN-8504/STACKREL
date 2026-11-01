@@ -1,0 +1,24 @@
+# Cloudflare static-asset headers.
+#
+# Phase 5 adds the full security header set from SPEC.md § Security
+# requirements (CSP with script hashes, HSTS, nosniff, Referrer-Policy,
+# Permissions-Policy, COOP). This file currently carries only what Phase 4
+# needs.
+
+# next/og writes build-time OG images to extensionless paths, so the asset
+# handler cannot infer a type and serves them with none. Social crawlers
+# reject those, so the type is declared explicitly.
+/opengraph-image
+  Content-Type: image/png
+  Cache-Control: public, max-age=3600
+
+/*/opengraph-image
+  Content-Type: image/png
+  Cache-Control: public, max-age=3600
+
+# Hashed build assets are immutable.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/static/*
+  Cache-Control: public, max-age=31536000, immutable

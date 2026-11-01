@@ -1,18 +1,52 @@
-import { SectionLabel } from '@/components/ui/section-label';
+import { EntryCard } from '@/components/site/entry-card';
+import { PageHeader } from '@/components/site/page-header';
+import { TagFilter } from '@/components/site/tag-filter';
+import { allLab, tagsOf } from '@/lib/content';
 
-export const metadata = { title: 'Lab' };
+export const metadata = {
+  title: 'Lab',
+  description: 'Experiments run on Stackrel: the hypothesis, the method and the result.',
+};
 
-// Placeholder route so the layout shell, navigation and command palette are
-// complete in Phase 2. Real content arrives in Phase 4.
-export default function Page() {
+const STATUS = {
+  running: 'warning',
+  shipped: 'success',
+  killed: 'error',
+} as const;
+
+export default function LabPage() {
+  const items = allLab();
+
   return (
-    <div className="container-content py-24">
-      <SectionLabel>Lab</SectionLabel>
-      <h1 className="text-h1 text-fg mt-3">Lab</h1>
-      <p className="text-body text-fg-muted mt-4 max-w-prose">
-        TODO: status-tagged experiments: running, shipped, killed, with results. Built in
-        Phase 4.
-      </p>
+    <div className="container-content pb-24">
+      <PageHeader
+        label="Lab"
+        title="Experiments"
+        intro="Questions worth testing, run in the open. Some ship, some get killed; both get written up."
+      />
+      {items.length === 0 ? (
+        <p className="text-body text-fg-muted">No experiments published yet.</p>
+      ) : (
+        <TagFilter
+          tags={tagsOf(items)}
+          items={items.map((i) => ({
+            slug: i.slug,
+            title: i.title,
+            summary: i.summary,
+            tags: i.tags,
+            node: (
+              <EntryCard
+                href={i.permalink}
+                title={i.title}
+                summary={i.summary}
+                date={i.date}
+                badge={{ label: i.status, variant: STATUS[i.status] }}
+                tags={i.tags}
+              />
+            ),
+          }))}
+        />
+      )}
     </div>
   );
 }

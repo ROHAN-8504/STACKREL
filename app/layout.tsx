@@ -7,6 +7,7 @@ import { CommandMenuProvider } from '@/components/site/command-menu-context';
 import { Footer } from '@/components/site/footer';
 import { Header } from '@/components/site/header';
 import { ThemeProvider } from '@/components/theme-provider';
+import { searchIndex } from '@/lib/content';
 import { SITE } from '@/lib/site';
 
 import './globals.css';
@@ -27,6 +28,9 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Built at build time and handed to the client palette as plain data.
+  const docs = searchIndex();
+
   return (
     // suppressHydrationWarning: next-themes sets [data-theme] before paint,
     // so the server HTML and first client render differ on this attribute
@@ -36,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className={`${GeistSans.variable} ${GeistMono.variable} relative flex min-h-dvh flex-col font-sans`}
       >
         <ThemeProvider>
-          <CommandMenuProvider>
+          <CommandMenuProvider docs={docs}>
             <a href="#main" className="skip-link">
               Skip to content
             </a>
