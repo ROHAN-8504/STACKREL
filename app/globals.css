@@ -382,3 +382,133 @@
     animation: none !important;
   }
 }
+
+/* ===========================================================================
+   LANDING MOTION — SPEC.md § Motion rules 1, 3, 4, 9, 10
+   Implemented in CSS rather than with the `motion` package: only transform
+   and opacity are animated, which CSS does natively, and the library would
+   cost ~35KB gzipped against a first-load budget that is already tight.
+   ========================================================================= */
+
+/* Rule 3: scroll reveals — fade in and rise 10px, once, staggered 50ms. */
+.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* Rule 4: hero entrance on first load only. A CSS animation runs once per
+   document load and is not replayed on client-side navigation. */
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero-item {
+  animation: hero-in var(--dur-slow) var(--ease-out) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+/* The headline is the LCP element. An element that starts at opacity 0 is
+   not an LCP candidate, which pushed LCP onto a below-fold heading and cost
+   ~4s under throttling. The headline therefore rises without fading — still
+   transform-only (motion rule 1), still inside the 500ms stagger. */
+@keyframes hero-rise {
+  from {
+    transform: translateY(12px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.hero-item--lcp {
+  animation: hero-rise var(--dur-slow) var(--ease-out) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+/* Rule 10: one very slow drift on the hero glow, paused when off-screen. */
+@keyframes glow-drift {
+  0%,
+  100% {
+    transform: translate3d(-3%, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, 2%, 0) scale(1.06);
+  }
+}
+
+.hero-glow {
+  animation: glow-drift 28s var(--ease-in-out) infinite;
+  /* Pauses the animation while the hero is scrolled out of view. */
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hero-item,
+  .hero-item--lcp {
+    animation: none;
+  }
+  .hero-glow {
+    animation: none;
+  }
+}
+
+/* Spotlight: radial highlight tracking the cursor, featured cards only. */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  background: radial-gradient(
+    380px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in srgb, var(--fg) 8%, transparent),
+    transparent 70%
+  );
+}
+
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight::before {
+    transition: none;
+  }
+}
+
+/* Hero radial glow behind the grid (SPEC.md § Hero). */
+@utility hero-radial {
+  background: radial-gradient(
+    60% 50% at 50% 0%,
+    var(--hero-glow) 0%,
+    var(--hero-glow-edge) 100%
+  );
+}
